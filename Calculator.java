@@ -1,11 +1,17 @@
 import java.util.Map;
+
+/** Main application for transforming in-fix expressions into post-fix, then evaluating those post-fix expressions
+ */
 public class Calculator 
 {
-    // Converts an infix expression to postfix notation
+    /** Converts an infix expression to postfix notation utalizing a linked stack
+     * @param infix An equasion as a string
+     * @return A string containing the postfix expression of infix 
+     */
     public static String convertToPostfix(String infix) {
         LinkedStack<Character> operatorStack = new LinkedStack<>();
         StringBuilder postfix = new StringBuilder();
-
+            
         for (int i = 0; i < infix.length(); i++) {
             char nextCharacter = infix.charAt(i);
 
@@ -57,6 +63,10 @@ public class Calculator
         return postfix.toString();
     }
 
+    /** Creates a hierarchy of priority of operations in-line with PEMDAS
+     * @param operator The operator to be evaluated
+     * @return An int representing the operator's priority
+     */
     private static int precedence(char operator) {
         switch (operator) {
             case '+':
@@ -72,7 +82,11 @@ public class Calculator
         }
     }
 
-    // Evaluates a postfix expression given a mapping of variable values
+    /** Evaluates a postfix expression given a mapping of variable values
+     * @param postfix A String postfix expression
+     * @param values A map of Characters and Doubles to assign values to variables within the postfix
+     * @return The top of the stack, which should contain the result of the expression
+     */
      public static double evaluatePostfix(String postfix, Map<Character, Double> values)
     {
         if (postfix == null || postfix.isEmpty())
@@ -160,6 +174,10 @@ public class Calculator
         return stack.peek();
     }
 
+    /** Evaluates a postfix expression only given a postfix expression
+     * @param postfix A String postfix expression
+     * @return The top of the stack, which should contain the result of the expression
+     */
     public static double evaluatePostfix(String postfix)
     {
         if (postfix == null || postfix.isEmpty())
@@ -237,7 +255,9 @@ public class Calculator
         return stack.peek();
     }
 
-        
+    /** A demo to show the power of the Calculator.java application
+     * @param args Command line arguments
+     */
     public static void main(String[] args)
     {   
         String infix = "a * b / (c-a) + d * e";

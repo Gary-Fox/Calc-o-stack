@@ -3,7 +3,8 @@ import static org.junit.Assert.assertEquals;
 import java.util.Map;
 import org.junit.Test;
 
-
+/** Unit tests for Calculator class
+ */
 public class Testing {
     //#################################[ conversion Tests ]##################################
     @Test
