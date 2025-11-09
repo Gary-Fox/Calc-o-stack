@@ -160,6 +160,83 @@ public class Calculator
         return stack.peek();
     }
 
+    public static double evaluatePostfix(String postfix)
+    {
+        if (postfix == null || postfix.isEmpty())
+        {
+            System.out.println("Empty or null expression!");
+            return 0;
+        }
+
+        StackImplementation<Double> stack = new ResizableArrayStack<>();
+
+        for (int i = 0; i < postfix.length(); i++)
+        {
+            char ch = postfix.charAt(i);
+
+            if (ch == ' ')
+            {
+                continue;
+            }
+
+            if (Character.isLetter(ch))
+            {
+                throw new IllegalArgumentException("Missing value for variable: " + ch);
+            }
+
+            if (Character.isDigit(ch))
+            {
+                // If a mapping for digit-characters is provided, prefer using that
+                // (this handles expressions like "123*+" where '1','2','3' are distinct operands).
+                    double num = 0;
+                    while (i < postfix.length() && Character.isDigit(postfix.charAt(i)))
+                    {
+                        num = num * 10 + (postfix.charAt(i) - '0');
+                        i++;
+                    }
+                    i--; // Adjust for the extra increment in the inner while loop
+                    stack.push(num);
+            }
+
+            if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^')
+            {
+                double b = stack.pop();
+                double a = stack.pop();
+                double r = 0;
+
+                if (ch == '+')
+                {
+                    r = a + b;
+                }
+                else if (ch == '-')
+                {
+                    r = a - b;
+                }
+                else if (ch == '*')
+                {
+                    r = a * b;
+                }
+                else if (ch == '/')
+                {
+                    r = a / b;
+                }
+                else if (ch == '^')
+                {
+                    r = Math.pow(a, b);
+                }
+
+                stack.push(r);
+            }
+        }
+
+        // If evaluation produced an empty stack, expression was malformed.
+        if (stack.isEmpty()) {
+            throw new IllegalArgumentException("Malformed postfix expression or missing operands");
+        }
+
+        return stack.peek();
+    }
+
         
     public static void main(String[] args)
     {   
