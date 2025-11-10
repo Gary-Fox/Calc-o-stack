@@ -11,6 +11,11 @@ public class Calculator
     public static String convertToPostfix(String infix) {
         LinkedStack<Character> operatorStack = new LinkedStack<>();
         StringBuilder postfix = new StringBuilder();
+
+        if (infix == null || infix.isEmpty()) {
+            System.out.println("Empty or null expression!");
+            return "";
+        }
             
         for (int i = 0; i < infix.length(); i++) {
             char nextCharacter = infix.charAt(i);
@@ -137,9 +142,15 @@ public class Calculator
 
             else if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^')
             {
-                double b = stack.pop();
-                double a = stack.pop();
-                double r = 0;
+                    if (stack.isEmpty()) {
+                        throw new IllegalArgumentException("Malformed postfix expression: too many operators, not enough operands");
+                    }
+                    double b = stack.pop();
+                    if (stack.isEmpty()) {
+                        throw new IllegalArgumentException("Malformed postfix expression: too many operators, not enough operands");
+                    }
+                    double a = stack.pop();
+                    double r = 0;
 
                 if (ch == '+')
                 {
@@ -164,14 +175,23 @@ public class Calculator
 
                 stack.push(r);
             }
+                else if (!Character.isDigit(ch) && !Character.isLetter(ch))
+            {
+                throw new IllegalArgumentException("Invalid character in expression: " + ch);
+            }
         }
 
-        // If evaluation produced an empty stack, expression was malformed.
+        // If evaluation produced an empty stack or has more than one value left, expression was malformed.
         if (stack.isEmpty()) {
             throw new IllegalArgumentException("Malformed postfix expression or missing operands");
         }
+        
+        double result = stack.pop();
+        if (!stack.isEmpty()) {
+            throw new IllegalArgumentException("Malformed postfix expression: too many operands");
+        }
 
-        return stack.peek();
+        return result;
     }
 
     /** Evaluates a postfix expression only given a postfix expression
@@ -218,7 +238,13 @@ public class Calculator
 
             if (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^')
             {
+                if (stack.isEmpty()) {
+                    throw new IllegalArgumentException("Malformed postfix expression: too many operators, not enough operands");
+                }
                 double b = stack.pop();
+                if (stack.isEmpty()) {
+                    throw new IllegalArgumentException("Malformed postfix expression: too many operators, not enough operands");
+                }
                 double a = stack.pop();
                 double r = 0;
 
@@ -245,14 +271,23 @@ public class Calculator
 
                 stack.push(r);
             }
+            else if (!Character.isDigit(ch) && !Character.isLetter(ch))
+            {
+                throw new IllegalArgumentException("Invalid character in expression: " + ch);
+            }
         }
 
-        // If evaluation produced an empty stack, expression was malformed.
+        // If evaluation produced an empty stack or has more than one value left, expression was malformed.
         if (stack.isEmpty()) {
             throw new IllegalArgumentException("Malformed postfix expression or missing operands");
         }
+        
+        double result = stack.pop();
+        if (!stack.isEmpty()) {
+            throw new IllegalArgumentException("Malformed postfix expression: too many operands");
+        }
 
-        return stack.peek();
+        return result;
     }
 
     /** A demo to show the power of the Calculator.java application

@@ -1,5 +1,6 @@
 import static org.junit.Assert.assertEquals;
 
+import java.util.EmptyStackException;
 import java.util.Map;
 import org.junit.Test;
 
@@ -74,11 +75,11 @@ public class Testing {
         @Test
     public void nestedParenthesisEval() {
         String postFix = "CF^ABDE+^Z+**ABFG+*+/";
-        Double expectedEval = 19.8192435577;
+        Double expectedEval = 1.6;
         Map<Character, Double> vals = Map.of(
             'A', 2.0,
-            'B', 1.5,
-            'C', 1.5,
+            'B', 1.0,
+            'C', 1.0,
             'D', 3.0,
             'E', 5.0,
             'F', 2.0,
@@ -154,6 +155,29 @@ public class Testing {
         assertEquals(0, result);
     }
 
+            @Test
+    public void infixToPostfixAndEval3() {
+        String infix = "(C^F * (A*(B^(D+E)+Z)))/(A+(B*(F+G)))";
+        String postFix = Calculator.convertToPostfix(infix);
+        Double expectedEval = 1.6;
+        Map<Character, Double> vals = Map.of(
+            'A', 2.0,
+            'B', 1.0,
+            'C', 1.0,
+            'D', 3.0,
+            'E', 5.0,
+            'F', 2.0,
+            'G', 1.0,
+            'Z', 3.0
+        );
+        double actualEval = Calculator.evaluatePostfix(postFix, vals);
+
+        int result = Double.compare(actualEval, expectedEval);
+        System.out.println(actualEval);
+
+        assertEquals(0, result);
+    }
+
     //#################################[ Error tests ]##################################
 
         @Test
@@ -170,5 +194,121 @@ public class Testing {
         }
 
     }
+
+        @Test
+    public void evalBadString() {
+        String Postfix = "AB+&C*";
+        Map<Character, Double> vals = Map.of(
+            'A', 1.0,
+            'B', 2.0,
+            'C', 3.0
+        );
+        try {
+            double actualEval = Calculator.evaluatePostfix(Postfix, vals);
+        } catch (IllegalArgumentException e) {
+            assertEquals("Invalid character in expression: &", e.getMessage());
+        }
+
+    }
+
+            @Test
+    public void oddVariables() {
+        String Postfix = "A$+&C*";
+        Map<Character, Double> vals = Map.of(
+            'A', 1.0,
+            '$', 2.0,
+            'C', 3.0,
+            '&', 1.0
+        );
+        try {
+            double actualEval = Calculator.evaluatePostfix(Postfix, vals);
+        } catch (IllegalArgumentException e) {
+            assertEquals("Invalid character in expression: $", e.getMessage());
+        }
+    }
+
+          @Test
+    public void emptyStringEval() {
+        String Postfix = "";
+
+        double actualEval = Calculator.evaluatePostfix(Postfix);
+        int result = Double.compare(actualEval, 0.0);
+        assertEquals( 0, result);
+        
+    }
+
+    
+            @Test
+    public void nullStringEval() {
+        String Postfix = null;
+        double actualEval = Calculator.evaluatePostfix(Postfix);
+        int result = Double.compare(actualEval, 0.0);
+        assertEquals( 0, result);
+        
+    }
+
+            @Test
+    public void emptyStringPostfix() {
+        String inFix = "";
+        String a = Calculator.convertToPostfix(inFix);
+        assertEquals( "", a);
+        
+    }
+
+    
+            @Test
+    public void nullStringPostfix() {
+        String inFix = null;
+        String b = Calculator.convertToPostfix(inFix);
+        assertEquals( "", b);
+        
+    }
+
+           @Test
+    public void tooManyOperators() {
+        String Postfix = "AB*C*+*++*/";
+        Map<Character, Double> vals = Map.of(
+            'A', 1.0,
+            'B', 2.0,
+            'C', 3.0
+        );
+        try {
+            double actualEval = Calculator.evaluatePostfix(Postfix, vals);
+        } catch (IllegalArgumentException e) {
+            assertEquals("Malformed postfix expression: too many operators, not enough operands", e.getMessage());
+        }
+    }
+
+               @Test
+    public void tooManyOperands() {
+        String Postfix = "ABC*BB";
+        Map<Character, Double> vals = Map.of(
+            'A', 1.0,
+            'B', 2.0,
+            'C', 3.0
+        );
+        try {
+            double actualEval = Calculator.evaluatePostfix(Postfix, vals);
+        } catch (IllegalArgumentException e) {
+            assertEquals("Malformed postfix expression: too many operands", e.getMessage());
+        }
+    }
+
+        @Test
+    public void tooManyOperandsInfix() {
+        String infix = "A + B * C D E";
+        String expectedPostfix = "ABCDE*+";
+        String actualPostfix = Calculator.convertToPostfix(infix);
+        assertEquals(expectedPostfix, actualPostfix);
+    }
+
+            @Test
+    public void tooManyOperatorsInfix() {
+        String infix = "A + B * C * + - E";
+        String expectedPostfix = "ABC**++E-";
+        String actualPostfix = Calculator.convertToPostfix(infix);
+        assertEquals(expectedPostfix, actualPostfix);
+    }
+   
 
 }
